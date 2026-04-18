@@ -176,3 +176,56 @@ export async function pullVerifiedContracts(limit = 100) {
 
   return { ok: true as const, inserted, scanned: items.length };
 }
+
+/**
+ * Pull address counters (tx count, gas used, transfers) and estimate unique wallets
+ * from recent transactions. Used to populate on-chain activity metrics per project.
+ */
+export async function pullAddressStats(contractAddress: string): Promise<{
+  ok: boolean;
+  txCount?: number;
+  gasUsed?: number;
+  transfersCount?: number;
+  uniqueWallets?: number;
+}> {
+  try {
+    const countersUrl = `${EXPLORER}/api/v2/addresses/${contractAddress}/counters`;
+    const countersRes = await fetch(countersUrl, { headers: { accept: "application/json" } });
+    if (!countersRes.ok) return { ok: false };
+
+    const counters = (await countersRes.json()) as {
+      transactions_count?: string;
+      gas_usage_count?: string;
+      token_transfers_count?: string;
+      validations_count?: string;
+    };
+
+    // Estimate unique wallets from recent transfers
+    let uniqueWallets: number | undefined;
+    try {
+      const transfersUrl = `${EXPLORER}/api/v2/addresses/${contractAddress}/token-transfers`;
+      const transfersRes = await fetch(transfersUrl, { headers: { accept: "application/json" } });
+      if (transfersRes.ok) {
+        const body = (await transfersRes.json()) as {
+          items?: Array<{ from?: { hash?: string }; to?: { hash?: string } }>;
+        };
+        const wallets = new Set<string>();
+        for (const item of body.items ?? []) {
+          if (item.from?.hash) wallets.add(item.from.hash.toLowerCase());
+          if (item.to?.hash) wallets.add(item.to.hash.toLowerCase());
+        }
+        uniqueWallets = wallets.size;
+      }
+    } catch { /* skip */ }
+
+    return {
+      ok: true,
+      txCount: parseInt(counters.transactions_count ?? "0") || 0,
+      gasUsed: parseInt(counters.gas_usage_count ?? "0") || 0,
+      transfersCount: parseInt(counters.token_transfers_count ?? "0") || 0,
+      uniqueWallets,
+    };
+  } catch {
+    return { ok: false };
+  }
+}

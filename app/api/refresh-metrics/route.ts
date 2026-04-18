@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { pullAddressStats } from "@/scanner/blockscout";
 
 /**
  * POST /api/refresh-metrics
@@ -63,18 +64,34 @@ export async function POST(req: NextRequest) {
 
     const holders = parseInt(token.holders_count, 10) || 0;
 
+    // Fetch on-chain activity stats (tx count, unique wallets)
+    const stats = await pullAddressStats(p.contractAddress);
+    const metricData: Record<string, number | null> = { holders };
+    if (stats.ok) {
+      if (stats.txCount != null) metricData.txCount = stats.txCount;
+      if (stats.uniqueWallets != null) metricData.uniqueUsers = stats.uniqueWallets;
+    }
+
     // Update live metrics
     await prisma.metric.upsert({
       where: { projectId: p.id },
-      create: { projectId: p.id, holders },
-      update: { holders },
+      create: { projectId: p.id, ...metricData },
+      update: metricData,
     });
 
     // Take daily snapshot
     await prisma.dailySnapshot.upsert({
       where: { projectId_date: { projectId: p.id, date: today } },
-      create: { projectId: p.id, date: today, holders },
-      update: { holders },
+      create: {
+        projectId: p.id,
+        date: today,
+        holders,
+        txCount: stats.txCount ?? null,
+      },
+      update: {
+        holders,
+        txCount: stats.txCount ?? null,
+      },
     });
 
     updated++;
