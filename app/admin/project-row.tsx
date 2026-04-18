@@ -13,6 +13,7 @@ type Project = {
   name: string;
   description: string | null;
   category: string;
+  tags: string[];
   contractAddress: string | null;
   verified: boolean;
   flagged: boolean;
@@ -120,6 +121,14 @@ export function AdminProjectRow({
                   </option>
                 ))}
               </select>
+            </Field>
+            <Field label="Tags (comma separated, e.g. dex,lending)" full>
+              <input
+                name="tags"
+                defaultValue={(project.tags ?? []).join(",")}
+                className="input"
+                placeholder="e.g. dex,lending (optional — adds secondary categories)"
+              />
             </Field>
             <Field label="Description" full>
               <textarea

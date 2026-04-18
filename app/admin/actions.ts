@@ -16,6 +16,7 @@ const updateSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1).max(120),
   category: z.enum(CATEGORY_IDS as [string, ...string[]]),
+  tags: z.string().optional().default(""),
   description: z.string().max(2000).optional().nullable(),
   contractAddress: z
     .string()
@@ -63,6 +64,7 @@ export async function updateProjectAction(_prev: unknown, formData: FormData) {
     id: fd(formData.get("id")),
     name: fd(formData.get("name")),
     category: fd(formData.get("category")),
+    tags: fd(formData.get("tags")),
     description: fd(formData.get("description")) || null,
     contractAddress: fd(formData.get("contractAddress")) || null,
     website: fd(formData.get("website")),
@@ -83,13 +85,19 @@ export async function updateProjectAction(_prev: unknown, formData: FormData) {
     return { error: parsed.error.issues.map((i) => i.message).join(", ") };
   }
 
-  const { id, website, twitter, telegram, discord, github, docs, ...rest } = parsed.data;
+  const { id, website, twitter, telegram, discord, github, docs, tags: tagsRaw, ...rest } = parsed.data;
+
+  const tags = (tagsRaw ?? "")
+    .split(",")
+    .map((t) => t.trim().toLowerCase())
+    .filter((t) => t.length > 0 && CATEGORY_IDS.includes(t as never) && t !== rest.category);
 
   await prisma.project.update({
     where: { id },
     data: {
       name: rest.name,
       category: rest.category,
+      tags,
       description: rest.description,
       contractAddress: rest.contractAddress,
       verified: rest.verified ?? false,
