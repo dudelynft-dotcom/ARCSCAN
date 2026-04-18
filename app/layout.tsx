@@ -44,9 +44,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen bg-ink-0 text-ink-700 antialiased">
         <Nav />
-        <main className="mx-auto max-w-7xl px-6 pb-24 pt-8">{children}</main>
+        <main className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 sm:pb-24 sm:pt-8">{children}</main>
         <footer className="border-t border-ink-200">
-          <div className="mx-auto max-w-7xl px-6 py-8 text-2xs uppercase tracking-wider text-ink-400">
+          <div className="mx-auto max-w-7xl px-4 py-8 text-2xs uppercase tracking-wider text-ink-400 sm:px-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 {appName} · Arc blockchain explorer · Not affiliated with Circle or Arc

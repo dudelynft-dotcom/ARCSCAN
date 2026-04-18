@@ -97,8 +97,8 @@ export default async function ComparePage({ searchParams }: { searchParams: SP }
       <CompareSelector projects={allProjects} selectedA={slugA} selectedB={slugB} />
 
       {projectA && projectB ? (
-        <div className="surface overflow-hidden">
-          <table className="data-table">
+        <div className="surface overflow-x-auto">
+          <table className="data-table min-w-[560px]">
             <thead>
               <tr>
                 <th className="w-1/4">Metric</th>

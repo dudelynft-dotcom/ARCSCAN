@@ -121,8 +121,8 @@ export default async function StatsPage() {
       <div className="grid gap-10 lg:grid-cols-2">
         <section>
           <div className="eyebrow mb-3">Leaderboard · by holders</div>
-          <div className="surface overflow-hidden">
-            <table className="data-table">
+          <div className="surface overflow-x-auto">
+            <table className="data-table min-w-[420px]">
               <thead>
                 <tr>
                   <th className="w-10">#</th>

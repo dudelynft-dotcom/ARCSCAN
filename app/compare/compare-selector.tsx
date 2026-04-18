@@ -21,7 +21,7 @@ export function CompareSelector({ projects, selectedA, selectedB }: Props) {
 
   return (
     <div className="surface p-4">
-      <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr_auto] sm:items-end">
+      <div className="grid gap-3 lg:grid-cols-[1fr_auto_1fr_auto] lg:items-end">
         <label className="block">
           <span className="eyebrow">Project A</span>
           <select

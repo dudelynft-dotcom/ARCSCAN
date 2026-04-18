@@ -54,7 +54,7 @@ export default async function HomePage() {
       <section className="space-y-6 pt-4">
         <div className="space-y-4">
           <div className="eyebrow">Arc · Stablecoin-native L1 · Chain ID 5042002</div>
-          <h1 className="max-w-4xl text-[44px] font-semibold leading-[1.05] tracking-tightest text-ink-700 sm:text-[56px]">
+          <h1 className="max-w-4xl text-[32px] font-semibold leading-[1.1] tracking-tightest text-ink-700 sm:text-[44px] lg:text-[56px] lg:leading-[1.05]">
             Every project building on Arc, indexed and tracked.
           </h1>
           <p className="max-w-2xl text-[15px] leading-relaxed text-ink-500">
@@ -117,8 +117,8 @@ export default async function HomePage() {
             title="Top by holders"
             href="/explorer?sort=holders"
           />
-          <div className="surface overflow-hidden">
-            <table className="data-table">
+          <div className="surface overflow-x-auto">
+            <table className="data-table min-w-[600px]">
               <thead>
                 <tr>
                   <th className="w-12">#</th>

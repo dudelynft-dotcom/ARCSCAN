@@ -89,8 +89,8 @@ export default async function ExplorerPage({ searchParams }: { searchParams: SP 
           <Link href="/explorer" className="btn mt-4">Clear filters</Link>
         </div>
       ) : (
-        <div className="surface overflow-hidden">
-          <table className="data-table">
+        <div className="surface overflow-x-auto">
+          <table className="data-table min-w-[760px]">
             <thead>
               <tr>
                 <th className="w-12">#</th>
