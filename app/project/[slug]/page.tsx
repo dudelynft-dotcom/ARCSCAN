@@ -2,11 +2,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { categoryLabel } from "@/lib/categories";
-import { displayScore, riskColor } from "@/lib/scoring";
+import { displayScore } from "@/lib/scoring";
 import { formatNumber, formatUsd, shortAddr, timeAgo } from "@/lib/format";
 import { VerifiedBadge } from "@/components/verified-badge";
-import { ScoreBar } from "@/components/score-bar";
-import { ExternalLink, Globe, Twitter, Send, Github, FileText, Copy } from "lucide-react";
 import { WatchlistButton } from "@/components/watchlist-button";
 
 export const revalidate = 60;
@@ -21,17 +19,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title,
     description: desc,
-    openGraph: {
-      title,
-      description: desc,
-      siteName: appName,
-      type: "website",
-    },
-    twitter: {
-      card: "summary",
-      title,
-      description: desc,
-    },
+    openGraph: { title, description: desc, siteName: appName, type: "website" },
+    twitter: { card: "summary", title, description: desc },
   };
 }
 
@@ -43,145 +32,191 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   });
   if (!p) notFound();
 
-  const { score, source } = displayScore(p);
+  const { score, source: scoreSource } = displayScore(p);
   const explorer = process.env.ARC_EXPLORER_URL || "https://testnet.arcscan.app";
 
   const links = [
-    { icon: Globe, href: p.socials?.website, label: "Website" },
-    { icon: Twitter, href: p.socials?.twitter ? `https://x.com/${p.socials.twitter}` : null, label: "Twitter" },
-    { icon: Send, href: p.socials?.telegram, label: "Telegram" },
-    { icon: Github, href: p.socials?.github, label: "GitHub" },
-    { icon: FileText, href: p.socials?.docs, label: "Docs" },
+    { href: p.socials?.website, label: "Website" },
+    {
+      href: p.socials?.twitter ? `https://x.com/${p.socials.twitter}` : null,
+      label: "Twitter",
+    },
+    { href: p.socials?.telegram, label: "Telegram" },
+    { href: p.socials?.discord, label: "Discord" },
+    { href: p.socials?.github, label: "GitHub" },
+    { href: p.socials?.docs, label: "Docs" },
   ].filter((l) => l.href);
 
   return (
-    <div className="space-y-8 pt-2">
-      <div>
-        <Link href="/explorer" className="text-sm text-arc-muted hover:text-white">
-          ← All projects
+    <div className="space-y-10">
+      {/* Breadcrumb */}
+      <div className="text-2xs uppercase tracking-wider text-ink-400">
+        <Link href="/explorer" className="hover:text-ink-700">
+          Explorer
         </Link>
+        <span className="mx-2">/</span>
+        <Link
+          href={`/category/${p.category}`}
+          className="hover:text-ink-700"
+        >
+          {categoryLabel(p.category)}
+        </Link>
+        <span className="mx-2">/</span>
+        <span className="text-ink-700">{p.name}</span>
       </div>
 
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold tracking-tight">{p.name}</h1>
+      {/* Header */}
+      <header className="flex flex-wrap items-start justify-between gap-6 border-b border-ink-200 pb-8">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-4xl font-semibold tracking-tight text-ink-700">{p.name}</h1>
             <VerifiedBadge verified={p.verified} flagged={p.flagged} />
-            <WatchlistButton slug={p.slug} />
           </div>
-          <div className="mt-2 flex items-center gap-2 text-sm text-arc-muted">
-            <a href={`/category/${p.category}`} className="pill hover:border-arc-accent">{categoryLabel(p.category)}</a>
-            <span>added {timeAgo(p.createdAt)}</span>
-            {p.metrics?.holders && (
-              <span className="pill">{p.metrics.holders.toLocaleString()} holders</span>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <Link href={`/category/${p.category}`} className="tag hover:border-ink-700">
+              {categoryLabel(p.category)}
+            </Link>
+            <span className="mono text-2xs uppercase tracking-wider text-ink-400">
+              added {timeAgo(p.createdAt)}
+            </span>
+            {p.contractAddress && (
+              <a
+                href={`${explorer}/address/${p.contractAddress}`}
+                target="_blank"
+                rel="noreferrer"
+                className="mono text-xs text-ink-500 hover:text-ink-700"
+              >
+                {shortAddr(p.contractAddress)}
+              </a>
             )}
           </div>
         </div>
-        <div className="text-right">
-          <div className="text-xs uppercase tracking-wide text-arc-muted">Score</div>
-          <div className="mt-1 flex items-center justify-end gap-2">
-            <ScoreBar score={score} />
-            {source === "override" && (
-              <span className="pill" title="Admin override">admin</span>
-            )}
-          </div>
-          <div className={`mt-1 text-xs ${riskColor(p.riskLevel)}`}>Risk: {p.riskLevel}</div>
+
+        <div className="flex items-center gap-3">
+          <WatchlistButton slug={p.slug} />
         </div>
       </header>
 
       {p.description && (
-        <section className="panel p-5 text-sm leading-relaxed text-arc-muted">
-          {p.description}
+        <section>
+          <div className="eyebrow mb-3">Overview</div>
+          <p className="max-w-3xl text-[15px] leading-relaxed text-ink-700">{p.description}</p>
         </section>
       )}
 
       {p.flagged && p.flagReason && (
-        <section className="panel border-arc-bad/60 bg-arc-bad/10 p-4 text-sm text-arc-bad">
-          <strong>Flagged:</strong> {p.flagReason}
+        <section className="surface border-ink-900 bg-ink-100 p-4 text-sm">
+          <strong className="text-ink-900">Flagged:</strong> {p.flagReason}
         </section>
       )}
 
-      <section className="grid gap-4 md:grid-cols-2">
-        <div className="panel p-5">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-arc-muted">
-            On-chain metrics
-          </h2>
-          {!p.metrics ? (
-            <p className="text-sm text-arc-muted">
-              No on-chain data yet. Metrics will appear once the project deploys and activity
-              is detected by the scanner.
-            </p>
-          ) : (
-            <dl className="grid grid-cols-2 gap-4 text-sm">
-              <Stat label="Liquidity" value={formatUsd(p.metrics.liquidity)} />
-              <Stat label="TVL" value={formatUsd(p.metrics.tvl)} />
-              <Stat label="Volume (24h)" value={formatUsd(p.metrics.volume24h)} />
-              <Stat label="Volume (7d)" value={formatUsd(p.metrics.volume7d)} />
-              <Stat label="Holders" value={formatNumber(p.metrics.holders)} />
-              <Stat label="Transactions" value={formatNumber(p.metrics.txCount)} />
-              <Stat label="Unique users" value={formatNumber(p.metrics.uniqueUsers)} />
-              <Stat
-                label="7d growth"
-                value={p.metrics.growthRate == null ? "—" : `${(p.metrics.growthRate * 100).toFixed(1)}%`}
-              />
-            </dl>
-          )}
-        </div>
-
-        <div className="panel p-5">
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-arc-muted">
-            Links
-          </h2>
-          {links.length === 0 ? (
-            <p className="text-sm text-arc-muted">No links on file yet.</p>
-          ) : (
-            <ul className="space-y-2 text-sm">
-              {links.map(({ icon: Icon, href, label }) => (
-                <li key={label}>
-                  <a
-                    href={href!}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="link inline-flex items-center gap-2"
-                  >
-                    <Icon className="h-4 w-4" />
-                    {label}
-                    <ExternalLink className="h-3 w-3 opacity-60" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {p.contractAddress && (
-            <div className="mt-5 border-t border-arc-border pt-4">
-              <div className="text-xs uppercase tracking-wide text-arc-muted">Contract</div>
-              <div className="mt-1 flex items-center gap-2 font-mono text-sm">
-                <span>{shortAddr(p.contractAddress)}</span>
-                <a
-                  href={`${explorer}/address/${p.contractAddress}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="link inline-flex items-center gap-1"
-                  title="Open in Arc explorer"
-                >
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-                <Copy className="h-3 w-3 text-arc-muted" aria-hidden />
-              </div>
-            </div>
-          )}
+      {/* Metrics grid */}
+      <section>
+        <div className="eyebrow mb-3">On-chain metrics</div>
+        <div className="surface grid grid-cols-2 sm:grid-cols-4">
+          <MetricCell label="Score" value={score != null ? String(score) : "—"} hint={scoreSource === "override" ? "admin-set" : ""} />
+          <MetricCell label="Risk" value={p.riskLevel === "UNKNOWN" ? "—" : p.riskLevel} />
+          <MetricCell label="Holders" value={formatNumber(p.metrics?.holders)} />
+          <MetricCell label="Transactions" value={formatNumber(p.metrics?.txCount)} />
+          <MetricCell label="Unique users" value={formatNumber(p.metrics?.uniqueUsers)} border />
+          <MetricCell label="TVL" value={formatUsd(p.metrics?.tvl)} border />
+          <MetricCell label="Volume 24h" value={formatUsd(p.metrics?.volume24h)} border />
+          <MetricCell label="Volume 7d" value={formatUsd(p.metrics?.volume7d)} border />
         </div>
       </section>
+
+      <div className="grid gap-8 lg:grid-cols-2">
+        {/* Links */}
+        <section>
+          <div className="eyebrow mb-3">Official links</div>
+          {links.length === 0 ? (
+            <div className="surface p-4 text-sm text-ink-500">
+              No official links on file yet.
+            </div>
+          ) : (
+            <div className="surface divide-y divide-ink-200">
+              {links.map((l) => (
+                <a
+                  key={l.label}
+                  href={l.href!}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-between px-4 py-3 hover:bg-ink-50"
+                >
+                  <span className="eyebrow">{l.label}</span>
+                  <span className="mono text-xs text-ink-700 truncate max-w-xs">
+                    {l.href!.replace(/^https?:\/\//, "")}
+                  </span>
+                </a>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Contract */}
+        <section>
+          <div className="eyebrow mb-3">Contract details</div>
+          <div className="surface divide-y divide-ink-200">
+            <KV label="Address" value={p.contractAddress ? shortAddr(p.contractAddress) : "—"} mono />
+            <KV label="Category" value={categoryLabel(p.category)} />
+            <KV label="Verification" value={p.verified ? "Verified" : "Unverified"} />
+            <KV label="Source" value={p.source} mono />
+            <KV label="Added" value={new Date(p.createdAt).toLocaleDateString()} />
+            <KV label="Updated" value={new Date(p.updatedAt).toLocaleDateString()} />
+          </div>
+        </section>
+      </div>
+
+      {/* Score bar at bottom for emphasis */}
+      {score != null && (
+        <section className="surface px-6 py-5">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="eyebrow">Trust score</div>
+              <div className="mt-1 text-sm text-ink-500">
+                Composite of on-chain activity, verified links, risk flags, and growth.
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="mono text-3xl font-semibold text-ink-700">{score}</div>
+              <div className="h-2 w-32 overflow-hidden bg-ink-100">
+                <div className="h-full bg-ink-700" style={{ width: `${score}%` }} />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function MetricCell({
+  label,
+  value,
+  hint,
+  border,
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+  border?: boolean;
+}) {
   return (
-    <div>
-      <dt className="text-xs text-arc-muted">{label}</dt>
-      <dd className="mt-0.5 font-mono tabular-nums">{value}</dd>
+    <div
+      className={`px-5 py-4 ${border ? "border-t border-ink-200" : ""} [&:not(:first-child)]:border-l [&:not(:first-child)]:border-ink-200`}
+    >
+      <div className="eyebrow">{label}</div>
+      <div className="mono mt-1 text-xl font-semibold text-ink-700">{value}</div>
+      {hint && <div className="mt-0.5 text-2xs uppercase tracking-wider text-ink-400">{hint}</div>}
+    </div>
+  );
+}
+
+function KV({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div className="flex items-center justify-between px-4 py-2.5">
+      <span className="eyebrow">{label}</span>
+      <span className={`text-sm text-ink-700 ${mono ? "mono" : ""}`}>{value}</span>
     </div>
   );
 }

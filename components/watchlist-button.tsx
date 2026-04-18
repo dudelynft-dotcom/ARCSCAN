@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Star } from "lucide-react";
-import { cn } from "@/lib/cn";
 
 const STORAGE_KEY = "arcradar_watchlist";
 
@@ -36,24 +34,9 @@ export function WatchlistButton({ slug }: { slug: string }) {
   return (
     <button
       onClick={toggle}
-      className={cn("btn text-xs gap-1", watched && "border-arc-accent text-arc-accent")}
-      title={watched ? "Remove from watchlist" : "Add to watchlist"}
+      className={watched ? "btn-primary h-9 px-3" : "btn"}
     >
-      <Star className={cn("h-3.5 w-3.5", watched && "fill-arc-accent")} />
-      {watched ? "Watching" : "Watch"}
+      {watched ? "Watching" : "Add to watchlist"}
     </button>
   );
-}
-
-export function useWatchlist() {
-  const [slugs, setSlugs] = useState<string[]>([]);
-
-  useEffect(() => {
-    setSlugs(getWatchlist());
-    const handler = () => setSlugs(getWatchlist());
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
-  }, []);
-
-  return slugs;
 }

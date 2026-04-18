@@ -1,17 +1,13 @@
-import { cn } from "@/lib/cn";
-
 export function ScoreBar({ score }: { score: number | null }) {
   if (score == null) {
-    return <span className="text-xs text-arc-muted">unrated</span>;
+    return <span className="mono text-2xs uppercase tracking-wider text-ink-400">unrated</span>;
   }
-  const colorClass =
-    score >= 75 ? "bg-arc-good" : score >= 50 ? "bg-arc-accent" : score >= 25 ? "bg-arc-warn" : "bg-arc-bad";
   return (
     <div className="flex items-center gap-2">
-      <div className="h-1.5 w-20 overflow-hidden rounded-full bg-arc-border">
-        <div className={cn("h-full", colorClass)} style={{ width: `${score}%` }} />
+      <div className="h-1 w-16 overflow-hidden bg-ink-100">
+        <div className="h-full bg-ink-700" style={{ width: `${score}%` }} />
       </div>
-      <span className="font-mono text-xs tabular-nums">{score}</span>
+      <span className="mono text-xs font-semibold text-ink-700">{score}</span>
     </div>
   );
 }

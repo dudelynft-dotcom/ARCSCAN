@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { formatNumber, formatUsd } from "@/lib/format";
-import { displayScore, riskColor } from "@/lib/scoring";
+import { displayScore } from "@/lib/scoring";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { CompareSelector } from "./compare-selector";
 import Link from "next/link";
@@ -16,8 +16,18 @@ export default async function ComparePage({ searchParams }: { searchParams: SP }
   const slugB = sp.b;
 
   const [projectA, projectB] = await Promise.all([
-    slugA ? prisma.project.findUnique({ where: { slug: slugA }, include: { metrics: true, socials: true } }) : null,
-    slugB ? prisma.project.findUnique({ where: { slug: slugB }, include: { metrics: true, socials: true } }) : null,
+    slugA
+      ? prisma.project.findUnique({
+          where: { slug: slugA },
+          include: { metrics: true, socials: true },
+        })
+      : null,
+    slugB
+      ? prisma.project.findUnique({
+          where: { slug: slugB },
+          include: { metrics: true, socials: true },
+        })
+      : null,
   ]);
 
   const allProjects = await prisma.project.findMany({
@@ -28,61 +38,107 @@ export default async function ComparePage({ searchParams }: { searchParams: SP }
 
   const rows = [
     { label: "Category", a: projectA?.category, b: projectB?.category },
-    { label: "Verified", a: projectA?.verified ? "Yes" : "No", b: projectB?.verified ? "Yes" : "No" },
-    { label: "Score", a: displayScore(projectA ?? {}).score?.toString() ?? "--", b: displayScore(projectB ?? {}).score?.toString() ?? "--" },
-    { label: "Risk", a: projectA?.riskLevel ?? "--", b: projectB?.riskLevel ?? "--" },
-    { label: "Holders", a: formatNumber(projectA?.metrics?.holders), b: formatNumber(projectB?.metrics?.holders) },
-    { label: "Transactions", a: formatNumber(projectA?.metrics?.txCount), b: formatNumber(projectB?.metrics?.txCount) },
+    {
+      label: "Verified",
+      a: projectA?.verified ? "Yes" : "No",
+      b: projectB?.verified ? "Yes" : "No",
+    },
+    {
+      label: "Score",
+      a: displayScore(projectA ?? {}).score?.toString() ?? "—",
+      b: displayScore(projectB ?? {}).score?.toString() ?? "—",
+    },
+    { label: "Risk", a: projectA?.riskLevel ?? "—", b: projectB?.riskLevel ?? "—" },
+    {
+      label: "Holders",
+      a: formatNumber(projectA?.metrics?.holders),
+      b: formatNumber(projectB?.metrics?.holders),
+    },
+    {
+      label: "Transactions",
+      a: formatNumber(projectA?.metrics?.txCount),
+      b: formatNumber(projectB?.metrics?.txCount),
+    },
+    {
+      label: "Unique users",
+      a: formatNumber(projectA?.metrics?.uniqueUsers),
+      b: formatNumber(projectB?.metrics?.uniqueUsers),
+    },
     { label: "TVL", a: formatUsd(projectA?.metrics?.tvl), b: formatUsd(projectB?.metrics?.tvl) },
-    { label: "Volume 24h", a: formatUsd(projectA?.metrics?.volume24h), b: formatUsd(projectB?.metrics?.volume24h) },
-    { label: "Website", a: projectA?.socials?.website ? "Yes" : "No", b: projectB?.socials?.website ? "Yes" : "No" },
-    { label: "Twitter", a: projectA?.socials?.twitter ? `@${projectA.socials.twitter}` : "--", b: projectB?.socials?.twitter ? `@${projectB.socials.twitter}` : "--" },
+    {
+      label: "Volume 24h",
+      a: formatUsd(projectA?.metrics?.volume24h),
+      b: formatUsd(projectB?.metrics?.volume24h),
+    },
+    {
+      label: "Website",
+      a: projectA?.socials?.website ? "Yes" : "No",
+      b: projectB?.socials?.website ? "Yes" : "No",
+    },
+    {
+      label: "Twitter",
+      a: projectA?.socials?.twitter ? `@${projectA.socials.twitter}` : "—",
+      b: projectB?.socials?.twitter ? `@${projectB.socials.twitter}` : "—",
+    },
   ];
 
   return (
-    <div className="space-y-6 pt-2">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Compare projects</h1>
-        <p className="mt-1 text-sm text-arc-muted">
-          Side-by-side comparison of two Arc ecosystem projects.
+        <div className="eyebrow">Compare</div>
+        <h1 className="mt-1 text-3xl font-semibold tracking-tight text-ink-700">
+          Side-by-side comparison
+        </h1>
+        <p className="mt-1 text-sm text-ink-500">
+          Pick two Arc projects to compare on-chain metrics and metadata.
         </p>
       </div>
 
       <CompareSelector projects={allProjects} selectedA={slugA} selectedB={slugB} />
 
       {projectA && projectB ? (
-        <div className="panel overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="surface overflow-hidden">
+          <table className="data-table">
             <thead>
-              <tr className="border-b border-arc-border">
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-arc-muted">Metric</th>
-                <th className="px-4 py-3 text-left">
-                  <Link href={`/project/${projectA.slug}`} className="link font-semibold">
+              <tr>
+                <th className="w-1/4">Metric</th>
+                <th>
+                  <Link
+                    href={`/project/${projectA.slug}`}
+                    className="font-medium text-ink-700 hover:underline"
+                  >
                     {projectA.name}
                   </Link>
-                  <VerifiedBadge verified={projectA.verified} />
+                  <span className="ml-2">
+                    <VerifiedBadge verified={projectA.verified} />
+                  </span>
                 </th>
-                <th className="px-4 py-3 text-left">
-                  <Link href={`/project/${projectB.slug}`} className="link font-semibold">
+                <th>
+                  <Link
+                    href={`/project/${projectB.slug}`}
+                    className="font-medium text-ink-700 hover:underline"
+                  >
                     {projectB.name}
                   </Link>
-                  <VerifiedBadge verified={projectB.verified} />
+                  <span className="ml-2">
+                    <VerifiedBadge verified={projectB.verified} />
+                  </span>
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-arc-border">
+            <tbody>
               {rows.map((r) => (
-                <tr key={r.label} className="hover:bg-arc-border/20">
-                  <td className="px-4 py-2.5 text-xs text-arc-muted">{r.label}</td>
-                  <td className="px-4 py-2.5 font-mono tabular-nums">{r.a ?? "--"}</td>
-                  <td className="px-4 py-2.5 font-mono tabular-nums">{r.b ?? "--"}</td>
+                <tr key={r.label}>
+                  <td className="eyebrow">{r.label}</td>
+                  <td className="mono text-ink-700">{r.a ?? "—"}</td>
+                  <td className="mono text-ink-700">{r.b ?? "—"}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       ) : (
-        <div className="panel p-8 text-center text-arc-muted">
+        <div className="surface p-10 text-center text-sm text-ink-500">
           Select two projects above to compare them side by side.
         </div>
       )}

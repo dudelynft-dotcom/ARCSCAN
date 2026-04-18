@@ -2,14 +2,22 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="space-y-4 py-20 text-center">
-      <h1 className="text-2xl font-bold">Project not found</h1>
-      <p className="text-arc-muted">
-        This project isn&apos;t in the directory yet. If you think it should be, let us know.
+    <div className="surface mx-auto max-w-lg p-10 text-center">
+      <div className="eyebrow">404</div>
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink-700">
+        Project not found
+      </h1>
+      <p className="mt-2 text-sm text-ink-500">
+        This project isn&apos;t in the directory. If it should be, let us know.
       </p>
-      <Link href="/explorer" className="btn-primary inline-block">
-        Back to explorer
-      </Link>
+      <div className="mt-5 flex justify-center gap-2">
+        <Link href="/explorer" className="btn-primary">
+          Back to explorer
+        </Link>
+        <Link href="/submit" className="btn">
+          Submit a project
+        </Link>
+      </div>
     </div>
   );
 }

@@ -5,21 +5,48 @@ export default {
   theme: {
     extend: {
       colors: {
-        arc: {
-          bg: "#0a0b0f",
-          panel: "#11131a",
-          border: "#1f2230",
-          muted: "#6b7280",
-          accent: "#5b9cff",
-          accentDim: "#2a4a80",
-          good: "#22c55e",
-          warn: "#f59e0b",
-          bad: "#ef4444",
+        ink: {
+          0: "#FFFFFF",
+          50: "#FAFAFA",
+          100: "#F5F5F5",
+          200: "#D4D4D4",
+          300: "#B3B3B3",
+          400: "#9A9A9A",
+          500: "#6F6F6F",
+          700: "#2B2B2B",
+          900: "#000000",
         },
+        // Semantic aliases (kept minimal — no accent color, monochrome by design)
+        good: "#2B2B2B",
+        warn: "#6F6F6F",
+        bad: "#000000",
       },
       fontFamily: {
-        sans: ["ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
-        mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"],
+        sans: [
+          "Inter",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
+        ],
+        mono: [
+          "JetBrains Mono",
+          "SF Mono",
+          "Menlo",
+          "Monaco",
+          "Consolas",
+          "ui-monospace",
+          "monospace",
+        ],
+      },
+      letterSpacing: {
+        tightest: "-0.04em",
+        tighter: "-0.02em",
+      },
+      fontSize: {
+        "2xs": ["0.6875rem", { lineHeight: "1rem" }],
       },
     },
   },

@@ -1,7 +1,11 @@
+import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { ProjectCard } from "@/components/project-card";
 import { ExplorerFilters } from "@/components/explorer-filters";
 import { CATEGORY_IDS, categoryLabel } from "@/lib/categories";
+import { VerifiedBadge } from "@/components/verified-badge";
+import { ScoreBar } from "@/components/score-bar";
+import { formatNumber, timeAgo } from "@/lib/format";
+import { displayScore } from "@/lib/scoring";
 import type { Prisma } from "@prisma/client";
 
 export const revalidate = 60;
@@ -30,9 +34,9 @@ export default async function ExplorerPage({ searchParams }: { searchParams: SP 
   }
   if (q) {
     where.OR = [
-      { name: { contains: q } },
-      { description: { contains: q } },
-      { category: { contains: q } },
+      { name: { contains: q, mode: "insensitive" } },
+      { description: { contains: q, mode: "insensitive" } },
+      { category: { contains: q, mode: "insensitive" } },
     ];
   }
 
@@ -41,34 +45,102 @@ export default async function ExplorerPage({ searchParams }: { searchParams: SP 
       ? [{ verified: "desc" }, { createdAt: "desc" }]
       : sort === "name"
         ? [{ verified: "desc" }, { name: "asc" }]
-        : [{ verified: "desc" }, { scoreOverride: "desc" }, { scoreComputed: "desc" }, { name: "asc" }];
+        : sort === "holders"
+          ? [{ verified: "desc" }, { metrics: { holders: "desc" } }]
+          : [
+              { verified: "desc" },
+              { scoreOverride: "desc" },
+              { scoreComputed: "desc" },
+              { name: "asc" },
+            ];
 
   const [projects, total] = await Promise.all([
-    prisma.project.findMany({ where, orderBy, take: 200 }),
+    prisma.project.findMany({
+      where,
+      orderBy,
+      take: 200,
+      include: { metrics: true },
+    }),
     prisma.project.count({ where }),
   ]);
 
   const heading = category ? categoryLabel(category) : "All projects";
 
   return (
-    <div className="space-y-6 pt-2">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">{heading}</h1>
-        <p className="text-sm text-arc-muted">
-          {total} project{total === 1 ? "" : "s"}
-          {q ? <> matching “{q}”</> : null}
+        <div className="eyebrow">Explorer</div>
+        <h1 className="mt-1 text-3xl font-semibold tracking-tight text-ink-700">{heading}</h1>
+        <p className="mt-1 text-sm text-ink-500">
+          <span className="mono text-ink-700">{total}</span> project{total === 1 ? "" : "s"}
+          {q ? (
+            <>
+              {" "}matching <span className="mono">&quot;{q}&quot;</span>
+            </>
+          ) : null}
         </p>
       </div>
+
       <ExplorerFilters />
+
       {projects.length === 0 ? (
-        <div className="panel p-8 text-center text-arc-muted">
-          No projects match your filters yet. Try clearing them or browsing all categories.
+        <div className="surface p-10 text-center">
+          <div className="text-sm text-ink-500">No projects match your filters.</div>
+          <Link href="/explorer" className="btn mt-4">Clear filters</Link>
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {projects.map((p) => (
-            <ProjectCard key={p.id} p={p} />
-          ))}
+        <div className="surface overflow-hidden">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th className="w-12">#</th>
+                <th>Project</th>
+                <th>Category</th>
+                <th className="text-right">Holders</th>
+                <th className="text-right">Score</th>
+                <th className="text-right">Risk</th>
+                <th className="text-right">Added</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projects.map((p, i) => {
+                const { score } = displayScore(p);
+                return (
+                  <tr key={p.id}>
+                    <td className="mono text-ink-400">{String(i + 1).padStart(3, "0")}</td>
+                    <td>
+                      <Link
+                        href={`/project/${p.slug}`}
+                        className="group flex items-center gap-2"
+                      >
+                        <span className="font-medium text-ink-700 group-hover:underline">
+                          {p.name}
+                        </span>
+                        <VerifiedBadge verified={p.verified} flagged={p.flagged} />
+                      </Link>
+                    </td>
+                    <td className="text-ink-500">{categoryLabel(p.category)}</td>
+                    <td className="mono text-right text-ink-700">
+                      {p.metrics?.holders ? formatNumber(p.metrics.holders) : "—"}
+                    </td>
+                    <td className="text-right">
+                      <div className="flex justify-end">
+                        <ScoreBar score={score} />
+                      </div>
+                    </td>
+                    <td className="text-right">
+                      <span className="mono text-2xs uppercase tracking-wider text-ink-500">
+                        {p.riskLevel === "UNKNOWN" ? "—" : p.riskLevel}
+                      </span>
+                    </td>
+                    <td className="mono text-right text-ink-400">
+                      {timeAgo(p.createdAt)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

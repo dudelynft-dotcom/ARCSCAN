@@ -11,13 +11,16 @@ export function SubmitForm() {
 
   if (state?.ok) {
     return (
-      <div className="panel p-8 text-center">
-        <h2 className="text-lg font-semibold">Submission received</h2>
-        <p className="mt-2 text-sm text-arc-muted">
-          Your project has been submitted for review. It will appear on the
-          explorer once approved by our team.
+      <div className="surface p-10 text-center">
+        <div className="eyebrow">Submitted</div>
+        <h2 className="mt-2 text-xl font-semibold tracking-tight text-ink-700">
+          Thank you
+        </h2>
+        <p className="mt-2 text-sm text-ink-500">
+          Your submission is queued for review. Approved projects appear on the explorer
+          within 24 hours.
         </p>
-        <a href="/explorer" className="btn-primary mt-4 inline-block">
+        <a href="/explorer" className="btn mt-5 inline-flex">
           Back to explorer
         </a>
       </div>
@@ -25,80 +28,109 @@ export function SubmitForm() {
   }
 
   return (
-    <form action={action} className="panel space-y-4 p-5">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block text-sm">
-          <span className="text-arc-muted">Project name *</span>
-          <input name="name" required className="input mt-1" placeholder="e.g. Synthra" />
-        </label>
-        <label className="block text-sm">
-          <span className="text-arc-muted">Category *</span>
-          <select name="category" required defaultValue="" className="input mt-1">
-            <option value="" disabled>Select category</option>
-            {CATEGORIES.map((c) => (
-              <option key={c.id} value={c.id}>{c.label}</option>
-            ))}
-          </select>
-        </label>
-      </div>
+    <form action={action} className="surface divide-y divide-ink-200">
+      <Section title="Identity">
+        <Grid>
+          <Field label="Project name *">
+            <input name="name" required className="input" placeholder="e.g. Synthra" />
+          </Field>
+          <Field label="Category *">
+            <select name="category" required defaultValue="" className="input">
+              <option value="" disabled>Select</option>
+              {CATEGORIES.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </Field>
+        </Grid>
+        <Field label="Description" full>
+          <textarea
+            name="description"
+            rows={3}
+            className="input"
+            placeholder="What does your project do on Arc? (max 2000 chars)"
+          />
+        </Field>
+      </Section>
 
-      <label className="block text-sm">
-        <span className="text-arc-muted">Description</span>
-        <textarea
-          name="description"
-          rows={3}
-          className="input mt-1"
-          placeholder="What does your project do on Arc?"
-        />
-      </label>
+      <Section title="On-chain">
+        <Field label="Contract address">
+          <input
+            name="contractAddress"
+            className="input mono text-xs"
+            placeholder="0x..."
+          />
+        </Field>
+      </Section>
 
-      <label className="block text-sm">
-        <span className="text-arc-muted">Contract address</span>
-        <input
-          name="contractAddress"
-          className="input mt-1 font-mono text-xs"
-          placeholder="0x..."
-        />
-      </label>
+      <Section title="Links">
+        <Grid>
+          <Field label="Website">
+            <input name="website" className="input" placeholder="https://..." />
+          </Field>
+          <Field label="Twitter handle">
+            <input name="twitter" className="input" placeholder="handle (no @)" />
+          </Field>
+        </Grid>
+        <Field label="Telegram">
+          <input name="telegram" className="input" placeholder="https://t.me/..." />
+        </Field>
+      </Section>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block text-sm">
-          <span className="text-arc-muted">Website</span>
-          <input name="website" className="input mt-1" placeholder="https://..." />
-        </label>
-        <label className="block text-sm">
-          <span className="text-arc-muted">Twitter handle</span>
-          <input name="twitter" className="input mt-1" placeholder="handle (no @)" />
-        </label>
-      </div>
+      <Section title="Submitter">
+        <Grid>
+          <Field label="Your email">
+            <input
+              name="submitterEmail"
+              type="email"
+              className="input"
+              placeholder="you@domain.com"
+            />
+          </Field>
+          <Field label="Note to reviewer">
+            <input
+              name="submitterNote"
+              className="input"
+              placeholder="Anything we should know?"
+            />
+          </Field>
+        </Grid>
+      </Section>
 
-      <label className="block text-sm">
-        <span className="text-arc-muted">Telegram</span>
-        <input name="telegram" className="input mt-1" placeholder="https://t.me/..." />
-      </label>
-
-      <div className="border-t border-arc-border pt-4">
-        <p className="mb-3 text-xs text-arc-muted">
-          Optional: leave your email so we can notify you when approved.
-        </p>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block text-sm">
-            <span className="text-arc-muted">Your email</span>
-            <input name="submitterEmail" type="email" className="input mt-1" placeholder="you@example.com" />
-          </label>
-          <label className="block text-sm">
-            <span className="text-arc-muted">Note to reviewer</span>
-            <input name="submitterNote" className="input mt-1" placeholder="Anything we should know?" />
-          </label>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-3 pt-2">
+      <div className="flex items-center gap-4 p-5">
         <button type="submit" className="btn-primary" disabled={pending}>
-          {pending ? "Submitting..." : "Submit project"}
+          {pending ? "Submitting..." : "Submit for review"}
         </button>
-        {state?.error && <span className="text-sm text-arc-bad">{state.error}</span>}
+        {state?.error && (
+          <span className="mono text-2xs uppercase tracking-wider text-ink-900">
+            {state.error}
+          </span>
+        )}
       </div>
     </form>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="p-5">
+      <div className="eyebrow mb-4">{title}</div>
+      <div className="space-y-3">{children}</div>
+    </div>
+  );
+}
+
+function Grid({ children }: { children: React.ReactNode }) {
+  return <div className="grid gap-3 sm:grid-cols-2">{children}</div>;
+}
+
+function Field({ label, full, children }: { label: string; full?: boolean; children: React.ReactNode }) {
+  return (
+    <label className={`block ${full ? "sm:col-span-2" : ""}`}>
+      <span className="eyebrow">{label}</span>
+      <div className="mt-1.5">{children}</div>
+    </label>
   );
 }

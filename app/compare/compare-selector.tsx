@@ -20,29 +20,45 @@ export function CompareSelector({ projects, selectedA, selectedB }: Props) {
   }
 
   return (
-    <div className="flex flex-wrap items-end gap-3">
-      <label className="block text-sm flex-1 min-w-[200px]">
-        <span className="text-arc-muted">Project A</span>
-        <select value={a} onChange={(e) => setA(e.target.value)} className="input mt-1">
-          <option value="">Select project...</option>
-          {projects.map((p) => (
-            <option key={p.slug} value={p.slug}>{p.name}</option>
-          ))}
-        </select>
-      </label>
-      <span className="pb-2 text-arc-muted">vs</span>
-      <label className="block text-sm flex-1 min-w-[200px]">
-        <span className="text-arc-muted">Project B</span>
-        <select value={b} onChange={(e) => setB(e.target.value)} className="input mt-1">
-          <option value="">Select project...</option>
-          {projects.map((p) => (
-            <option key={p.slug} value={p.slug}>{p.name}</option>
-          ))}
-        </select>
-      </label>
-      <button onClick={go} disabled={!a || !b} className="btn-primary">
-        Compare
-      </button>
+    <div className="surface p-4">
+      <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr_auto] sm:items-end">
+        <label className="block">
+          <span className="eyebrow">Project A</span>
+          <select
+            value={a}
+            onChange={(e) => setA(e.target.value)}
+            className="input mt-1.5"
+          >
+            <option value="">Select...</option>
+            {projects.map((p) => (
+              <option key={p.slug} value={p.slug}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <span className="self-center text-center text-2xs uppercase tracking-wider text-ink-400">
+          vs
+        </span>
+        <label className="block">
+          <span className="eyebrow">Project B</span>
+          <select
+            value={b}
+            onChange={(e) => setB(e.target.value)}
+            className="input mt-1.5"
+          >
+            <option value="">Select...</option>
+            {projects.map((p) => (
+              <option key={p.slug} value={p.slug}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button onClick={go} disabled={!a || !b} className="btn-primary">
+          Compare
+        </button>
+      </div>
     </div>
   );
 }

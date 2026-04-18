@@ -3,7 +3,8 @@ import "./globals.css";
 import { Nav } from "@/components/nav";
 
 const appName = process.env.NEXT_PUBLIC_APP_NAME || "ArcRadar";
-const appTagline = process.env.NEXT_PUBLIC_APP_TAGLINE || "Discover projects building on Arc";
+const appTagline =
+  process.env.NEXT_PUBLIC_APP_TAGLINE || "Discovery infrastructure for Arc blockchain";
 
 export const metadata: Metadata = {
   title: {
@@ -13,27 +14,37 @@ export const metadata: Metadata = {
   description: appTagline,
   openGraph: {
     title: `${appName} — ${appTagline}`,
-    description: `Track every project building on Arc blockchain. ${appName} auto-syncs from on-chain data.`,
+    description:
+      "Every project on Arc blockchain, tracked and indexed in real time. Auto-synced from on-chain data.",
     siteName: appName,
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: `${appName} — ${appTagline}`,
-    description: `Track every project building on Arc blockchain. Auto-synced from on-chain data.`,
+    description:
+      "Every project on Arc blockchain, tracked and indexed in real time.",
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-arc-bg text-white antialiased">
+      <body className="min-h-screen bg-ink-0 text-ink-700 antialiased">
         <Nav />
-        <main className="mx-auto max-w-6xl px-4 pb-24 pt-6">{children}</main>
-        <footer className="mx-auto max-w-6xl px-4 pb-10 pt-6 text-xs text-arc-muted">
-          <div className="border-t border-arc-border pt-6">
-            {appName} is an independent explorer. Data is community-curated and partner lists
-            sourced from Circle&apos;s public Arc testnet announcement. Not affiliated with Circle or Arc.
+        <main className="mx-auto max-w-7xl px-6 pb-24 pt-8">{children}</main>
+        <footer className="border-t border-ink-200">
+          <div className="mx-auto max-w-7xl px-6 py-8 text-2xs uppercase tracking-wider text-ink-400">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                {appName} · Arc blockchain explorer · Not affiliated with Circle or Arc
+              </div>
+              <div className="flex gap-4">
+                <a href="/api/v1/projects" className="hover:text-ink-700">API</a>
+                <a href="/submit" className="hover:text-ink-700">Submit</a>
+                <a href="https://github.com/dudelynft-dotcom/ARCSCAN" className="hover:text-ink-700">Source</a>
+              </div>
+            </div>
           </div>
         </footer>
       </body>

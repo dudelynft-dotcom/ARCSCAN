@@ -1,43 +1,108 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
+  --grid: #F5F5F5;
+}
+
+*,
+*::before,
+*::after {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html,
 body {
-  background: #0a0b0f;
-  color: #e5e7eb;
+  background: #FFFFFF;
+  color: #2B2B2B;
   min-height: 100vh;
-}
-
-body {
-  font-feature-settings: "cv11", "ss01";
+  font-feature-settings: "cv11", "ss01", "tnum";
 }
 
 ::selection {
-  background: rgba(91, 156, 255, 0.3);
+  background: #2B2B2B;
+  color: #FFFFFF;
+}
+
+/* Subtle background grid for tech / explorer vibe */
+.grid-bg {
+  background-image:
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
 @layer components {
-  .panel {
-    @apply rounded-xl border border-arc-border bg-arc-panel;
+  /* Surfaces */
+  .surface {
+    @apply border border-ink-200 bg-ink-0;
   }
+  .surface-hover {
+    @apply transition-colors hover:border-ink-700;
+  }
+
+  /* Typography */
+  .eyebrow {
+    @apply text-2xs font-semibold uppercase tracking-[0.14em] text-ink-500;
+  }
+  .mono {
+    @apply font-mono tabular-nums;
+  }
+
+  /* Links */
   .link {
-    @apply text-arc-accent hover:underline underline-offset-2;
+    @apply underline underline-offset-[3px] decoration-ink-300 hover:decoration-ink-700 transition-colors;
   }
-  .pill {
-    @apply inline-flex items-center gap-1 rounded-full border border-arc-border bg-arc-panel px-2.5 py-0.5 text-xs text-arc-muted;
-  }
+
+  /* Buttons */
   .btn {
-    @apply inline-flex items-center justify-center rounded-lg border border-arc-border bg-arc-panel px-3 py-2 text-sm font-medium hover:bg-arc-border/40 transition-colors;
+    @apply inline-flex items-center justify-center gap-1.5 h-9 px-3.5 text-sm font-medium border border-ink-200 bg-ink-0 text-ink-700 hover:border-ink-700 hover:bg-ink-100 transition-colors;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-lg bg-arc-accent px-3 py-2 text-sm font-semibold text-arc-bg hover:bg-arc-accent/90 transition-colors;
+    @apply inline-flex items-center justify-center gap-1.5 h-9 px-4 text-sm font-semibold border border-ink-700 bg-ink-700 text-ink-0 hover:bg-ink-900 hover:border-ink-900 transition-colors;
   }
+  .btn-sm {
+    @apply inline-flex items-center justify-center gap-1 h-7 px-2.5 text-xs font-medium border border-ink-200 bg-ink-0 text-ink-700 hover:border-ink-700 transition-colors;
+  }
+
+  /* Inputs */
   .input {
-    @apply w-full rounded-lg border border-arc-border bg-arc-bg px-3 py-2 text-sm text-white placeholder:text-arc-muted focus:border-arc-accent focus:outline-none;
+    @apply w-full h-9 px-3 text-sm border border-ink-200 bg-ink-0 text-ink-700 placeholder:text-ink-400 focus:border-ink-700 focus:outline-none transition-colors;
+  }
+  textarea.input {
+    @apply h-auto py-2;
+  }
+  select.input {
+    @apply pr-8;
+  }
+
+  /* Tags / Pills */
+  .tag {
+    @apply inline-flex items-center h-5 px-1.5 text-2xs font-medium uppercase tracking-wider border border-ink-200 bg-ink-0 text-ink-500;
+  }
+  .tag-dark {
+    @apply inline-flex items-center h-5 px-1.5 text-2xs font-medium uppercase tracking-wider bg-ink-700 text-ink-0;
+  }
+  .tag-outline {
+    @apply inline-flex items-center h-5 px-1.5 text-2xs font-medium uppercase tracking-wider border border-ink-700 text-ink-700;
+  }
+
+  /* Tables (explorer-style) */
+  .data-table {
+    @apply w-full text-sm;
+  }
+  .data-table th {
+    @apply text-left font-semibold uppercase tracking-wider text-2xs text-ink-500 px-4 py-3 border-b border-ink-200;
+  }
+  .data-table td {
+    @apply px-4 py-3 border-b border-ink-100;
+  }
+  .data-table tr:hover td {
+    @apply bg-ink-50;
   }
 }
