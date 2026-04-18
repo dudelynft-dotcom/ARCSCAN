@@ -54,7 +54,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="flex gap-4">
                 <a href="/api/v1/projects" className="hover:text-ink-700">API</a>
                 <a href="/submit" className="hover:text-ink-700">Submit</a>
-                <a href="https://github.com/dudelynft-dotcom/ARCSCAN" className="hover:text-ink-700">Source</a>
               </div>
             </div>
           </div>
