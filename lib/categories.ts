@@ -1,6 +1,7 @@
 export const CATEGORIES = [
   { id: "stablecoin", label: "Stablecoin", blurb: "Issuers of fiat-backed digital currency on Arc" },
   { id: "dex", label: "DEX", blurb: "Decentralized exchanges & AMMs" },
+  { id: "mining", label: "Mining", blurb: "Mining protocols & emission-based token distribution" },
   { id: "cex", label: "CEX", blurb: "Centralized exchanges integrating Arc" },
   { id: "lending", label: "Lending", blurb: "Credit, borrow/lend & money markets" },
   { id: "payments", label: "Payments", blurb: "Merchant, remittance & consumer payments" },
