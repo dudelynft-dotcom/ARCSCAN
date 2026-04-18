@@ -76,6 +76,11 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             <Link href={`/category/${p.category}`} className="tag hover:border-ink-700">
               {categoryLabel(p.category)}
             </Link>
+            {(p.tags ?? []).map((t) => (
+              <Link key={t} href={`/category/${t}`} className="tag hover:border-ink-700">
+                {categoryLabel(t)}
+              </Link>
+            ))}
             <span className="mono text-2xs uppercase tracking-wider text-ink-400">
               added {timeAgo(p.createdAt)}
             </span>

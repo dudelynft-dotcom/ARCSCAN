@@ -24,21 +24,26 @@ export default async function ExplorerPage({ searchParams }: { searchParams: SP 
   const verified = pickStr(sp.verified) === "1";
   const fresh = pickStr(sp.fresh) === "1";
 
-  const where: Prisma.ProjectWhereInput = { flagged: false };
+  const andFilters: Prisma.ProjectWhereInput[] = [];
   if (category && CATEGORY_IDS.includes(category as never)) {
-    where.category = category;
-  }
-  if (verified) where.verified = true;
-  if (fresh) {
-    where.createdAt = { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) };
+    andFilters.push({ OR: [{ category }, { tags: { has: category } }] });
   }
   if (q) {
-    where.OR = [
-      { name: { contains: q, mode: "insensitive" } },
-      { description: { contains: q, mode: "insensitive" } },
-      { category: { contains: q, mode: "insensitive" } },
-    ];
+    andFilters.push({
+      OR: [
+        { name: { contains: q, mode: "insensitive" } },
+        { description: { contains: q, mode: "insensitive" } },
+        { category: { contains: q, mode: "insensitive" } },
+      ],
+    });
   }
+
+  const where: Prisma.ProjectWhereInput = {
+    flagged: false,
+    ...(verified ? { verified: true } : {}),
+    ...(fresh ? { createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } } : {}),
+    ...(andFilters.length > 0 ? { AND: andFilters } : {}),
+  };
 
   const orderBy: Prisma.ProjectOrderByWithRelationInput[] =
     sort === "new"

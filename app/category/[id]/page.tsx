@@ -27,7 +27,10 @@ export default async function CategoryPage({ params }: { params: Promise<{ id: s
   if (!cat) notFound();
 
   const projects = await prisma.project.findMany({
-    where: { category: id, flagged: false },
+    where: {
+      flagged: false,
+      OR: [{ category: id }, { tags: { has: id } }],
+    },
     orderBy: [{ verified: "desc" }, { scoreOverride: "desc" }, { createdAt: "desc" }],
     include: { metrics: true },
   });

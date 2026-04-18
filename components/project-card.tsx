@@ -10,6 +10,7 @@ type CardProject = {
   name: string;
   description: string | null;
   category: string;
+  tags?: string[];
   verified: boolean;
   flagged: boolean;
   riskLevel: string;
@@ -34,8 +35,11 @@ export function ProjectCard({ p }: { p: CardProject }) {
             <h3 className="truncate text-[15px] font-semibold tracking-tight text-ink-700">{p.name}</h3>
             <VerifiedBadge verified={p.verified} flagged={p.flagged} />
           </div>
-          <div className="mt-1.5 flex items-center gap-2">
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
             <span className="tag">{categoryLabel(p.category)}</span>
+            {(p.tags ?? []).map((t) => (
+              <span key={t} className="tag">{categoryLabel(t)}</span>
+            ))}
             {p.riskLevel !== "UNKNOWN" && (
               <span className="mono text-2xs uppercase tracking-wider text-ink-400">
                 {p.riskLevel}
