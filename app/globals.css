@@ -4,9 +4,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light mode — Salt and Pepper */
 :root {
   color-scheme: light;
-  --grid: #F5F5F5;
+  --ink-0: 255 255 255;
+  --ink-50: 250 250 250;
+  --ink-100: 245 245 245;
+  --ink-200: 212 212 212;
+  --ink-300: 179 179 179;
+  --ink-400: 154 154 154;
+  --ink-500: 111 111 111;
+  --ink-700: 43 43 43;
+  --ink-900: 0 0 0;
+  --grid: 245 245 245;
+}
+
+/* Dark mode — inverted Salt and Pepper */
+.dark {
+  color-scheme: dark;
+  --ink-0: 10 10 10;
+  --ink-50: 18 18 18;
+  --ink-100: 26 26 26;
+  --ink-200: 42 42 42;
+  --ink-300: 68 68 68;
+  --ink-400: 119 119 119;
+  --ink-500: 154 154 154;
+  --ink-700: 245 245 245;
+  --ink-900: 255 255 255;
+  --grid: 26 26 26;
 }
 
 *,
@@ -18,27 +43,26 @@
 
 html,
 body {
-  background: #FFFFFF;
-  color: #2B2B2B;
+  background: rgb(var(--ink-0));
+  color: rgb(var(--ink-700));
   min-height: 100vh;
   font-feature-settings: "cv11", "ss01", "tnum";
+  transition: background-color 120ms ease, color 120ms ease;
 }
 
 ::selection {
-  background: #2B2B2B;
-  color: #FFFFFF;
+  background: rgb(var(--ink-700));
+  color: rgb(var(--ink-0));
 }
 
-/* Subtle background grid for tech / explorer vibe */
 .grid-bg {
   background-image:
-    linear-gradient(to right, var(--grid) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+    linear-gradient(to right, rgb(var(--grid)) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--grid)) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 
 @layer components {
-  /* Surfaces */
   .surface {
     @apply border border-ink-200 bg-ink-0;
   }
@@ -46,7 +70,6 @@ body {
     @apply transition-colors hover:border-ink-700;
   }
 
-  /* Typography */
   .eyebrow {
     @apply text-2xs font-semibold uppercase tracking-[0.14em] text-ink-500;
   }
@@ -54,12 +77,10 @@ body {
     @apply font-mono tabular-nums;
   }
 
-  /* Links */
   .link {
     @apply underline underline-offset-[3px] decoration-ink-300 hover:decoration-ink-700 transition-colors;
   }
 
-  /* Buttons */
   .btn {
     @apply inline-flex items-center justify-center gap-1.5 h-9 px-3.5 text-sm font-medium border border-ink-200 bg-ink-0 text-ink-700 hover:border-ink-700 hover:bg-ink-100 transition-colors;
   }
@@ -70,7 +91,6 @@ body {
     @apply inline-flex items-center justify-center gap-1 h-7 px-2.5 text-xs font-medium border border-ink-200 bg-ink-0 text-ink-700 hover:border-ink-700 transition-colors;
   }
 
-  /* Inputs */
   .input {
     @apply w-full h-9 px-3 text-sm border border-ink-200 bg-ink-0 text-ink-700 placeholder:text-ink-400 focus:border-ink-700 focus:outline-none transition-colors;
   }
@@ -81,7 +101,6 @@ body {
     @apply pr-8;
   }
 
-  /* Tags / Pills */
   .tag {
     @apply inline-flex items-center h-5 px-1.5 text-2xs font-medium uppercase tracking-wider border border-ink-200 bg-ink-0 text-ink-500;
   }
@@ -92,7 +111,6 @@ body {
     @apply inline-flex items-center h-5 px-1.5 text-2xs font-medium uppercase tracking-wider border border-ink-700 text-ink-700;
   }
 
-  /* Tables (explorer-style) */
   .data-table {
     @apply w-full text-sm;
   }

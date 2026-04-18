@@ -27,9 +27,21 @@ export const metadata: Metadata = {
   },
 };
 
+const themeScript = `
+  try {
+    var t = localStorage.getItem('arcradar_theme');
+    if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  } catch (e) {}
+`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-screen bg-ink-0 text-ink-700 antialiased">
         <Nav />
         <main className="mx-auto max-w-7xl px-6 pb-24 pt-8">{children}</main>

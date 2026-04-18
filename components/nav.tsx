@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ThemeToggle } from "./theme-toggle";
 
 const appName = process.env.NEXT_PUBLIC_APP_NAME || "ArcRadar";
 
@@ -34,6 +35,9 @@ export function Nav() {
           <Link href="/submit" className="btn-primary ml-2">
             Submit project
           </Link>
+          <div className="ml-2">
+            <ThemeToggle />
+          </div>
         </nav>
       </div>
     </header>

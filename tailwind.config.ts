@@ -2,24 +2,21 @@ import type { Config } from "tailwindcss";
 
 export default {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
         ink: {
-          0: "#FFFFFF",
-          50: "#FAFAFA",
-          100: "#F5F5F5",
-          200: "#D4D4D4",
-          300: "#B3B3B3",
-          400: "#9A9A9A",
-          500: "#6F6F6F",
-          700: "#2B2B2B",
-          900: "#000000",
+          0: "rgb(var(--ink-0) / <alpha-value>)",
+          50: "rgb(var(--ink-50) / <alpha-value>)",
+          100: "rgb(var(--ink-100) / <alpha-value>)",
+          200: "rgb(var(--ink-200) / <alpha-value>)",
+          300: "rgb(var(--ink-300) / <alpha-value>)",
+          400: "rgb(var(--ink-400) / <alpha-value>)",
+          500: "rgb(var(--ink-500) / <alpha-value>)",
+          700: "rgb(var(--ink-700) / <alpha-value>)",
+          900: "rgb(var(--ink-900) / <alpha-value>)",
         },
-        // Semantic aliases (kept minimal — no accent color, monochrome by design)
-        good: "#2B2B2B",
-        warn: "#6F6F6F",
-        bad: "#000000",
       },
       fontFamily: {
         sans: [
