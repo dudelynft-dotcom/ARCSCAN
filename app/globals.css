@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: #0a0b0f;
+  color: #e5e7eb;
+  min-height: 100vh;
+}
+
+body {
+  font-feature-settings: "cv11", "ss01";
+}
+
+::selection {
+  background: rgba(91, 156, 255, 0.3);
+}
+
+@layer components {
+  .panel {
+    @apply rounded-xl border border-arc-border bg-arc-panel;
+  }
+  .link {
+    @apply text-arc-accent hover:underline underline-offset-2;
+  }
+  .pill {
+    @apply inline-flex items-center gap-1 rounded-full border border-arc-border bg-arc-panel px-2.5 py-0.5 text-xs text-arc-muted;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg border border-arc-border bg-arc-panel px-3 py-2 text-sm font-medium hover:bg-arc-border/40 transition-colors;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-arc-accent px-3 py-2 text-sm font-semibold text-arc-bg hover:bg-arc-accent/90 transition-colors;
+  }
+  .input {
+    @apply w-full rounded-lg border border-arc-border bg-arc-bg px-3 py-2 text-sm text-white placeholder:text-arc-muted focus:border-arc-accent focus:outline-none;
+  }
+}

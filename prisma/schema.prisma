@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  description     String?
+  logoUrl         String?
+  category        String
+  contractAddress String?
+  launchedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  verified        Boolean  @default(false)
+  flagged         Boolean  @default(false)
+  flagReason      String?
+
+  scoreOverride   Int?
+  scoreComputed   Int?
+  riskLevel       String   @default("UNKNOWN")
+
+  source          String   @default("seed")
+  sourceNote      String?
+
+  metrics         Metric?
+  socials         Socials?
+  snapshots       DailySnapshot[]
+  airdrops        Airdrop[]
+
+  @@index([category])
+  @@index([verified])
+  @@index([createdAt])
+}
+
+model Metric {
+  id          String   @id @default(cuid())
+  projectId   String   @unique
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  liquidity   Float?
+  volume24h   Float?
+  volume7d    Float?
+  tvl         Float?
+  holders     Int?
+  txCount     Int?
+  uniqueUsers Int?
+  growthRate  Float?
+
+  updatedAt   DateTime @updatedAt
+}
+
+model Socials {
+  id          String   @id @default(cuid())
+  projectId   String   @unique
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  website     String?
+  twitter     String?
+  telegram    String?
+  discord     String?
+  github      String?
+  docs        String?
+
+  updatedAt   DateTime @updatedAt
+}
+
+model DiscoveryCandidate {
+  id              String   @id @default(cuid())
+  contractAddress String   @unique
+  chainId         Int
+  source          String
+  detectedAt      DateTime @default(now())
+  txHash          String?
+  blockNumber     Int?
+  symbol          String?
+  tokenName       String?
+  decimals        Int?
+  processed       Boolean  @default(false)
+  promoted        Boolean  @default(false)
+  notes           String?
+
+  @@index([processed])
+  @@index([detectedAt])
+}
+
+model Submission {
+  id              String   @id @default(cuid())
+  name            String
+  category        String
+  description     String?
+  contractAddress String?
+  website         String?
+  twitter         String?
+  telegram        String?
+  submitterEmail  String?
+  submitterNote   String?
+  status          String   @default("pending")
+  reviewNote      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model DailySnapshot {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  date      String
+  holders   Int?
+  txCount   Int?
+  volume    Float?
+  tvl       Float?
+  score     Int?
+
+  @@unique([projectId, date])
+  @@index([date])
+}
+
+model Airdrop {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  url         String?
+  reward      String?
+  status      String    @default("active")
+  endsAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status])
+  @@index([projectId])
+}
+
+model NetworkStat {
+  id              String   @id @default(cuid())
+  date            String   @unique
+  totalTxCount    Int?
+  totalAddresses  Int?
+  totalContracts  Int?
+  avgBlockTime    Float?
+  avgGasPrice     Float?
+  createdAt       DateTime @default(now())
+}
+
+model ScannerCursor {
+  id          String   @id
+  lastBlock   Int      @default(0)
+  updatedAt   DateTime @updatedAt
+}

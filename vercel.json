@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/scanner/tick",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/refresh-metrics",
+      "schedule": "30 */6 * * *"
+    }
+  ]
+}
