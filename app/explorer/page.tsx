@@ -38,10 +38,10 @@ export default async function ExplorerPage({ searchParams }: { searchParams: SP 
 
   const orderBy: Prisma.ProjectOrderByWithRelationInput[] =
     sort === "new"
-      ? [{ createdAt: "desc" }]
+      ? [{ verified: "desc" }, { createdAt: "desc" }]
       : sort === "name"
-        ? [{ name: "asc" }]
-        : [{ scoreOverride: "desc" }, { scoreComputed: "desc" }, { verified: "desc" }, { name: "asc" }];
+        ? [{ verified: "desc" }, { name: "asc" }]
+        : [{ verified: "desc" }, { scoreOverride: "desc" }, { scoreComputed: "desc" }, { name: "asc" }];
 
   const [projects, total] = await Promise.all([
     prisma.project.findMany({ where, orderBy, take: 200 }),

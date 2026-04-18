@@ -15,13 +15,13 @@ async function getHomeData() {
 
   const [justLaunched, newest, verified, total, byCat] = await Promise.all([
     prisma.project.findMany({
-      where: { flagged: false, createdAt: { gte: dayAgo } },
-      orderBy: { createdAt: "desc" },
+      where: { flagged: false, createdAt: { gte: dayAgo }, source: { not: "seed" } },
+      orderBy: [{ verified: "desc" }, { createdAt: "desc" }],
       take: 8,
     }),
     prisma.project.findMany({
-      where: { flagged: false, createdAt: { gte: weekAgo } },
-      orderBy: { createdAt: "desc" },
+      where: { flagged: false, createdAt: { gte: weekAgo }, source: { not: "seed" } },
+      orderBy: [{ verified: "desc" }, { createdAt: "desc" }],
       take: 8,
     }),
     prisma.project.findMany({

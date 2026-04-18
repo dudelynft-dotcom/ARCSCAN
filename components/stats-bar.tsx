@@ -9,8 +9,8 @@ export async function StatsBar() {
   const [total, verified, newThisWeek, newToday, totalHolders] = await Promise.all([
     prisma.project.count({ where: { flagged: false } }),
     prisma.project.count({ where: { verified: true, flagged: false } }),
-    prisma.project.count({ where: { createdAt: { gte: weekAgo }, flagged: false } }),
-    prisma.project.count({ where: { createdAt: { gte: dayAgo }, flagged: false } }),
+    prisma.project.count({ where: { createdAt: { gte: weekAgo }, flagged: false, source: { not: "seed" } } }),
+    prisma.project.count({ where: { createdAt: { gte: dayAgo }, flagged: false, source: { not: "seed" } } }),
     prisma.metric.aggregate({ _sum: { holders: true } }),
   ]);
 
